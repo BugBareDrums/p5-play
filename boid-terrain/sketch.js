@@ -4,13 +4,22 @@ let balls;
 function setup() {
   createCanvas(800, 800);
   terrain = generatePerlin3dTerrain();
-  balls = [new Ball(), new Ball(), new Ball()];
+  balls = [
+    new Ball(),
+    new Ball(),
+    new Ball(),
+    new Ball(),
+    new Ball(),
+    new Ball(),
+    new Ball(),
+    new Ball(),
+  ];
 
   for (let x = 0; x < terrain.length; x++) {
     for (let y = 0; y < terrain[x].length; y++) {
       const z = terrain[x][y];
 
-      const color = Math.floor(z * 200) % 10 == 1 ? 0 : 255;
+      const color = Math.floor(z * 200) % 10 == 1 ? 0 : Math.floor(z * 25) * 10;
       stroke(color);
       strokeWeight(3);
       point(x, y);
@@ -58,7 +67,7 @@ function draw() {
     );
 
     const slope = getDownwardSlopeVector(x, y, z);
-    ball.move(slope.mult(0.1));
+    ball.move(slope.mult(1));
     ball.show();
   }
   // add the slope vector to the ball's position
@@ -81,15 +90,15 @@ function generatePerlin3dTerrain() {
 
 function getDownwardSlopeVector(x, y, z) {
   // calculate the normal vector
-  const xy = y.sub(x);
-  const xz = z.sub(x);
+  const xy = z.sub(y);
+  const xz = x.sub(y);
 
   const normal = xy.cross(xz);
 
   // calculate the slope vector
-  const slope = normal.cross(xy);
+  //const slope = normal.cross(xy);
 
   // normalize the slope vector
   // console.log(slopeNormalized);
-  return slope;
+  return normal.normalize();
 }
