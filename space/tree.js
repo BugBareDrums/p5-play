@@ -1,8 +1,8 @@
 function Tree(pos, dir) {
-  const attraction_distance = 100;
-  const kill_distance = 15;
   this.attractors = [];
+  this.endNodes = [];
   this.nodes = [];
+  this.complete = false;
 
   for (let i = 0; i < 150; i++) {
     this.attractors.push(new Attractor(random(width), random(height)));
@@ -11,6 +11,7 @@ function Tree(pos, dir) {
   const root = new Node(null, pos, dir);
 
   this.nodes.push(root);
+  this.endNodes.push(root);
   let current = root;
   let found = false;
 
@@ -38,32 +39,22 @@ function Tree(pos, dir) {
 
       this.attractors = this.attractors.filter((leaf) => !leaf.reached);
 
-      this.addnodes();
-
-      // for (let node of this.nodes) {
-      //   for (let othernode of this.nodes) {
-      //     if (node != othernode) {
-      //       const dist = p5.Vector.dist(node.pos, othernode.pos);
-      //       if (dist < 10) {
-      //         // find opposite direction
-      //         const opposite = p5.Vector.sub(node.pos, othernode.pos);
-      //         opposite.normalize();
-      //         opposite.mult(0.1);
-      //         node.dir.add(opposite);
-      //       }
-      //     }
-      //   }
-      // }
+      if (this.attractors.length < 10) {
+        this.complete = true;
+      } else {
+        this.addnodes();
+      }
     }
   };
 
   this.findClosestNode = function (attractor) {
-    let record = attraction_distance;
+    let record = CONFIG.attractionDistance;
     let closestnode = null;
 
-    for (let node of this.nodes) {
+    for (let i = 0; i < this.nodes.length; i++) {
+      const node = this.nodes[i];
       const dist = p5.Vector.dist(attractor.pos, node.pos);
-      if (dist < kill_distance) {
+      if (dist < CONFIG.killDistance) {
         attractor.reached = true;
         closestnode = null;
         break;
@@ -77,14 +68,20 @@ function Tree(pos, dir) {
   };
 
   this.addnodes = function () {
-    let newnodes = [];
+    let newNodes = [];
     for (let node of this.nodes.filter((n) => n.closestCount > 1)) {
       node.dir.div(node.closestCount + 1);
-      newnodes.push(node.next());
+      newNodes.push(node.next());
       node.reset();
     }
 
-    this.nodes = [...this.nodes, ...newnodes];
+    if (newNodes.length > 0) {
+      this.nodes = [...this.nodes, ...newNodes];
+    }
+  };
+
+  this.getEndNodes = function () {
+    return this.nodes.filter((n) => n.child == null);
   };
 
   this.growTillWithinAttractionDistance = function () {
@@ -92,14 +89,16 @@ function Tree(pos, dir) {
       for (let attractor of this.attractors) {
         const dist = p5.Vector.dist(current.pos, attractor.pos);
 
-        if (dist < attraction_distance) {
+        if (dist < CONFIG.attractionDistance) {
           found = true;
         }
       }
 
       if (!found) {
         current = current.next();
+
         this.nodes.push(current);
+        this.endNodes = [current];
       }
     }
   };
