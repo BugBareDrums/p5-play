@@ -15,22 +15,23 @@ function setup() {
     new Ball(),
   ];
 
-  for (let x = 0; x < terrain.length; x++) {
-    for (let y = 0; y < terrain[x].length; y++) {
-      const z = terrain[x][y];
+  // for (let x = 0; x < terrain.length; x++) {
+  //   for (let y = 0; y < terrain[x].length; y++) {
+  //     const z = terrain[x][y];
 
-      const color = Math.floor(z * 200) % 10 == 1 ? 0 : Math.floor(z * 25) * 10;
-      stroke(color);
-      strokeWeight(3);
-      point(x, y);
-    }
-  }
+  //     const color = Math.floor(z * 200) % 10 == 1 ? 0 : Math.floor(z * 25) * 10;
+  //     stroke(color);
+  //     strokeWeight(3);
+  //     point(x, y);
+  //   }
+  // }
 }
 
 class Ball {
   constructor() {
     this.pos = createVector(random(0, height), random(0, width));
     this.color = color(random(0, 255), random(0, 255), random(0, 255));
+    this.momentum = createVector(0, 0);
   }
 
   show() {
@@ -40,10 +41,20 @@ class Ball {
   }
 
   move(vector) {
-    if (this.pos.x + vector.x < 0 || this.pos.x + vector.x > width) return;
-    if (this.pos.y + vector.y < 0 || this.pos.y + vector.y > height) return;
+    const finalVector = vector.add(this.momentum.mult(0.99));
 
-    this.pos.add(vector);
+    // slope toward the center of the screen
+    const center = createVector(width / 2, height / 2);
+    const centerVector = center.sub(this.pos).normalize().mult(0.9);
+    finalVector.add(centerVector);
+
+    if (this.pos.x + finalVector.x < 0 || this.pos.x + finalVector.x > width)
+      return;
+    if (this.pos.y + finalVector.y < 0 || this.pos.y + finalVector.y > height)
+      return;
+    this.momentum = finalVector;
+
+    this.pos.add(finalVector);
   }
 }
 
@@ -70,7 +81,6 @@ function draw() {
     ball.move(slope.mult(1));
     ball.show();
   }
-  // add the slope vector to the ball's position
 }
 
 function generatePerlin3dTerrain() {

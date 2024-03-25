@@ -3,16 +3,16 @@
 //   branch: "#CFC1AE",
 //   worms: ["#D6A258", "#C47645", "#B04A2E"],
 // };
-// const COLOURS = {
-//   background: "#382F32",
-//   branch: "#FFEAF2",
-//   worms: ["#FCD9E5", "#FBC5D8", "#F1396D"],
-// };
 const COLOURS = {
-  background: "#4C6406",
-  branch: "#7D940E",
-  worms: ["#F2C043", "#FFC218"],
+  background: "#382F32",
+  branch: "#FFEAF2",
+  worms: ["#FCD9E5", "#FBC5D8", "#F1396D"],
 };
+// const COLOURS = {
+//   background: "#4C6406",
+//   branch: "#7D940E",
+//   worms: ["#F2C043", "#FFC218"],
+// };
 // const COLOURS = {
 //   background: "#BFDDDB",
 //   branch: "#90BEBC",

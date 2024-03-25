@@ -3,7 +3,7 @@ let chen1, chen2;
 function setup() {
   createCanvas(1200, 800, WEBGL);
 
-  chen1 = new chen({
+  chen1 = new ch({
     xx: 0.1,
     yy: 0.3,
     zz: -15.15,
@@ -13,19 +13,19 @@ function setup() {
     dt: 0.007,
     colour: "white",
   });
-  chen2 = new chen({
+  chen2 = new ch({
     xx: 0.11,
     yy: 0.3,
     zz: -15.15,
     a: -10,
     b: -4,
     c: 18.1,
-    dt: 0.008,
+    dt: 0.0085,
     colour: "white",
   });
 }
 
-function chen({ xx, yy, zz, a, b, c, dt, colour }) {
+function ch({ xx, yy, zz, a, b, c, dt, colour }) {
   this.points = [];
   this.x = xx;
   this.y = yy;
@@ -36,6 +36,10 @@ function chen({ xx, yy, zz, a, b, c, dt, colour }) {
     let dy = a * this.y + this.x * this.z;
     let dz = b * this.z + this.x * this.y;
 
+    this.lastX = this.x;
+    this.lastY = this.y;
+    this.lastZ = this.z;
+
     this.x += dx * dt;
     this.y += dy * dt;
     this.z += dz * dt;
@@ -45,9 +49,9 @@ function chen({ xx, yy, zz, a, b, c, dt, colour }) {
 
   this.show = function () {
     push();
-    translate(this.x, this.y, this.z);
+    translate(this.x, this.y);
     stroke(colour);
-    sphere(1);
+    sphere(this.z / 20, 10, 10);
     pop();
 
     stroke(colour);
@@ -78,9 +82,10 @@ let points = [];
 let rotateBy = 0.001;
 
 function draw() {
-  background(100);
-  scale(10);
+  // background(100);
+  scale(14);
   noFill();
+  ambientMaterial(255);
 
   ambientLight(255);
 
@@ -91,11 +96,11 @@ function draw() {
   //   let dy = x + a * y;
   //   let dz = b + z * (x - c);
 
-  rotateBy += 0.005;
+  // rotateBy += 0.005;
   rotate(rotateBy, [1, 1, 0]);
 
   chen1.step();
   chen1.show();
   chen2.step();
-  chen2.show();
+  // chen2.show();
 }
