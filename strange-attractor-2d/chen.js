@@ -1,8 +1,7 @@
-function chen({ xx, yy, zz, a, b, c, dt, colour }) {
+function chen({ xx, yy, zz, a, b, c, dt }) {
   this.x = xx;
   this.y = yy;
   this.z = zz;
-  this.colour = colour;
 
   this.step = function () {
     const noiseFactor = 0;
@@ -22,7 +21,6 @@ function chen({ xx, yy, zz, a, b, c, dt, colour }) {
   };
 
   this.getNormalisedVector = function () {
-    console.log(this.x, this.y, this.z);
     return normaliseVector(createVector(this.x, this.y, this.z), 30);
   };
 }

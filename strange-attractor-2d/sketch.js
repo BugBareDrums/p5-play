@@ -1,51 +1,23 @@
 let combiner1;
-let save = true;
+let save = false;
 
 let numberOfIterations = 0;
-let maxIterations = 450;
+const refreshRate = 600;
+let maxIterations = refreshRate * 10;
 let beginAtIteration = 0;
 
+const onOffRate = 230;
+const onOffOffset = 0;
+const onRatio = 0.3;
+
+const colours = ["#B9D7D9", "#668284", "#2A2829", "#493736", "#7B3B3B"];
+const currentColour = colours[0];
+
 function setup() {
-  createCanvas(6000, 6000);
-
-  chen1 = new chen({
-    xx: 0.1,
-    yy: 0.32,
-    zz: -16,
-    a: -10,
-    b: -4,
-    c: 18.1,
-    dt: 0.0082222,
-    colour: "black",
-  });
-  chen2 = new chen({
-    xx: 0.14,
-    yy: 0.33,
-    zz: -15.5,
-    a: -10,
-    b: -4,
-    c: 18.1,
-    dt: 0.0103,
-    colour: "black",
-  });
-  circle1 = new circ({
-    radiusx: 50.0,
-    radiusy: 50.0,
-    dr: 0.01,
-  });
-
-  rect = new rectangle({
-    height: 100,
-    width: 100,
-    stepSize: 0.1,
-  });
-
-  combiner1 = new combiner({
-    steppers: [chen1, circle1],
-  });
+  createCanvas(2000, 2000);
 }
 
-function combiner({ steppers }) {
+function combiner({ steppers, colour, baseWidth }) {
   this.steppers = steppers;
 
   this.vectorWindow = [];
@@ -67,51 +39,100 @@ function combiner({ steppers }) {
       stepper.getNormalisedVector()
     );
     return createVector(
-      normalised[0].z * normalised[1].y,
-      normalised[0].y * normalised[1].z,
-      normalised[0].x
+      (normalised[1].x * -normalised[2].x + normalised[0].x + normalised[3].x) /
+        2,
+      (normalised[1].y * -normalised[2].y + normalised[0].y + normalised[3].y) /
+        2,
+      normalised[0].y * normalised[1].z + normalised[2].x
     );
   };
 
   this.show = function () {
+    if ((numberOfIterations + onOffOffset) % onOffRate > onOffRate * onRatio) {
+      return;
+    }
+
     if (this.vectorWindow.length < 4) {
       return;
     }
 
-    stroke("black");
     noFill();
 
-    let weight = (this.vectorWindow[0].z + 1) * 10;
+    let weight = (this.vectorWindow[0].z + 1) * baseWidth * 2;
 
     const mapToScreen = (value, dimension) => (value + 1) * (dimension / 2);
-    strokeWeight(weight < 2 ? 2 : weight);
+
+    const w = this.vectorWindow;
+
+    stroke(colour);
+    strokeWeight(weight < 1 ? 1 : weight);
 
     curve(
-      mapToScreen(this.vectorWindow[0].x, width),
-      mapToScreen(this.vectorWindow[0].y, height),
-      mapToScreen(this.vectorWindow[1].x, width),
-      mapToScreen(this.vectorWindow[1].y, height),
-      mapToScreen(this.vectorWindow[2].x, width),
-      mapToScreen(this.vectorWindow[2].y, height),
-      mapToScreen(this.vectorWindow[3].x, width),
-      mapToScreen(this.vectorWindow[3].y, height)
+      mapToScreen(w[0].x, width),
+      mapToScreen(w[0].y, height),
+      mapToScreen(w[1].x, width),
+      mapToScreen(w[1].y, height),
+      mapToScreen(w[2].x, width),
+      mapToScreen(w[2].y, height),
+      mapToScreen(w[3].x, width),
+      mapToScreen(w[3].y, height)
     );
+
+    // fill(colour);
+    // circle(mapToScreen(w[0].x, width), mapToScreen(w[0].y, height), weight * 3);
   };
 }
 
 let points = [];
 
+function createCombiner(macroIterationNumber) {
+  chen1 = new chen({
+    xx: 0.1,
+    yy: 0.32,
+    zz: -16,
+    a: -10.1 + macroIterationNumber * 0.1,
+    b: -4.1,
+    c: 18.1,
+    dt: 0.004,
+  });
+
+  chen2 = new chen({
+    xx: 0.1,
+    yy: 0.33,
+    zz: -15.5,
+    a: -10,
+    b: -4,
+    c: 18.1,
+    dt: 0.002,
+  });
+
+  circle1 = new circ({
+    dr: 0.01 + macroIterationNumber * 0.01,
+  });
+
+  rect = new rectangle({
+    height: 100,
+    width: 100,
+    stepSize: 0.1 - macroIterationNumber * 0.001,
+  });
+
+  const perlin1 = new perlin({ dr: 0.001 + macroIterationNumber * 0.001 });
+
+  return new combiner({
+    steppers: [chen2, chen1, circle1, chen1],
+    colour: colours[macroIterationNumber % colours.length],
+    // map macroIterationNumber to a greyscale colour
+    //colour: color(256 - macroIterationNumber * 25),
+    baseWidth: macroIterationNumber,
+  });
+}
+
 function draw() {
-  // chen1.step();
-  // chen2.step();
-  // circle1.step();
-  // rect.step();
+  const macroIterationNumber = Math.floor(numberOfIterations / refreshRate) + 1;
+  if (numberOfIterations % refreshRate === 0) {
+    combiner1 = createCombiner(macroIterationNumber);
+  }
   combiner1.step();
-
-  // vectorWindow1.push(createVector(thing1.x, thing1.y, thing1.z));
-
-  // console.log(vectorWindow1[0].x);
-  // vectorWindow1.shift();
 
   numberOfIterations++;
 
@@ -128,25 +149,4 @@ function draw() {
   }
 
   combiner1.show();
-  // stroke("black");
-  // // line(this.lastX * 10, this.lastY * 10, this.x * 10, this.y * 10);
-  // strokeWeight(v.z + 20);
-  // set colour to greyscale based on z value
-  // stroke(0, 0, 0, (thing1.z + 10) * 40);
-  // noFill();
-
-  // let weight = vectorWindow1[0].z + 20;
-  // let weight = 1;
-
-  // strokeWeight(weight < 4 ? 4 : weight);
-  // curve(
-  //   vectorWindow1[0].x * spreadx - 400,
-  //   vectorWindow1[0].y * spready - 400,
-  //   vectorWindow1[1].y * spready - 400,
-  //   vectorWindow1[1].x * spreadx - 400,
-  //   vectorWindow1[2].x * spreadx - 400,
-  //   vectorWindow1[2].y * spready - 400,
-  //   vectorWindow1[3].y * spready - 400,
-  //   vectorWindow1[3].x * spreadx - 400
-  // );
 }

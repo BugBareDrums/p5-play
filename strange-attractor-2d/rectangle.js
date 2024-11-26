@@ -23,7 +23,7 @@ function rectangle({ height, width, stepSize }) {
 
   this.getNormalisedVector = function () {
     return normaliseVector(
-      createVector(this.x, this.y, this.z),
+      createVector(this.x - width / 2, this.y - height / 2, this.z - width / 2),
       Math.max(width, height)
     );
   };
