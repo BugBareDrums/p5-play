@@ -9,6 +9,7 @@
     "space/node.js",
     "space/attractor.js",
     "space/tree.js",
-    "space/sketch.js"
+    "space/sketch.js",
+    "vector-to-gcode"
   ]
 }
