@@ -1,4 +1,5 @@
 export const gc = {
+  feedRate: (speedInMmPerMinute: number) => `F${speedInMmPerMinute}`,
   rapidPositioning: 'G0',
   linearInterpolation: 'G1',
   clockwiseArc: 'G2',

@@ -8,7 +8,7 @@ function circ({ dr }) {
     this.radians += dr;
     this.x = Math.cos(this.radians);
     this.y = Math.sin(this.radians);
-    this.z = 1;
+    this.z = 0.2;
   };
 
   this.getNormalisedVector = function () {

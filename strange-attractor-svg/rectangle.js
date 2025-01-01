@@ -18,7 +18,7 @@ function rectangle({ height, width, stepSize }) {
     } else {
       this.y -= stepSize;
     }
-    this.z = this.x + this.y;
+    this.z = 1;
   };
 
   this.getNormalisedVector = function () {

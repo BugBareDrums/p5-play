@@ -13,6 +13,8 @@ const options = [
   gc.toolRadiusCompensationOff,
   gc.unitsInMillimeters,
   gc.workCoordinateSystem1,
+  gc.unitsPerMinuteFeedRateMode,
+  gc.feedRate(2000),
   '',
 ].join('\n');
 
@@ -29,12 +31,19 @@ export default {
       response.status(400).json('Invalid request');
     }
 
+    const normalisedVectors = vectors.map((vector) =>
+      mapNormalVectorToOutputBounds(vector, outputBounds)
+    );
+
+    const raisePen = `g0 x0 y0 z5\n`;
+    const goToStart = `g0 x${normalisedVectors[0].x} y${normalisedVectors[0].y} z5\n`;
+
     const responseBody = vectors
       .map((vector) => mapNormalVectorToOutputBounds(vector, outputBounds))
       .map((vector) => `g1 x${vector.x} y${vector.y} z${vector.z}`)
       .join('\n');
 
-    response.json(options + responseBody);
+    response.json(options + raisePen + goToStart + responseBody);
   },
 };
 

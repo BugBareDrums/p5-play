@@ -27,9 +27,9 @@ function saveGcode() {
       },
       body: JSON.stringify({
         outputBounds: {
-          x: { min: 0, max: 200 },
-          y: { min: 0, max: 200 },
-          z: { min: 0, max: 1 },
+          x: { min: 0, max: 300 },
+          y: { min: 0, max: 300 },
+          z: { min: 0, max: 3 },
         },
         vectors: allPoints.map((point) => ({
           x: point.x,

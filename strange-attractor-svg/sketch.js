@@ -3,21 +3,17 @@ let save = true;
 const attractorName = "balanced";
 
 let numberOfIterations = 0;
-const refreshRate = 12000000;
-let maxIterations = refreshRate * 35;
+const refreshRate = 10000;
+let maxIterations = refreshRate * 100;
 let beginAtIteration = 0;
-const baseWidth = 20;
-const macroIterationRotation = 60;
-const iterationRotation = -0.1;
-
-const onOffRate = 230;
-const onOffOffset = 0;
-const onRatio = 0.3;
+const baseWidth = 30;
+const macroIterationRotation = 30;
+const iterationRotation = 0;
 
 const allPoints = [];
 
 function setup() {
-  createCanvas(1000, 1000);
+  createCanvas(2000, 2000);
   document.getElementById("save-gcode").addEventListener("click", saveGcode);
   document.getElementById("save-png").addEventListener("click", savePng);
   document.getElementById("stop").addEventListener("click", () => {
@@ -31,13 +27,13 @@ function setup() {
 function createCombiner(macroIterationNumber) {
   const uiValues = getUiValues();
   chen1 = new chen({
-    xx: 0.11 + macroIterationNumber * 0.1,
-    yy: 0.2 + macroIterationNumber * 0.1,
-    zz: -16 + macroIterationNumber * 0.1,
-    a: -10.1 + macroIterationNumber * 0.3,
-    b: -4.1 + macroIterationNumber * 0.1,
-    c: 18.1 + macroIterationNumber * 0.1,
-    dt: 0.008 + macroIterationNumber * 0.0001,
+    xx: 0.11 + macroIterationNumber * -0.1,
+    yy: 0.2 + macroIterationNumber * -0.1,
+    zz: -16 + macroIterationNumber * -0.2,
+    a: -10.1 + macroIterationNumber * -0.3,
+    b: -4.1 + macroIterationNumber * -0.1,
+    c: 18.1 + macroIterationNumber * -0.1,
+    dt: 0.008 + macroIterationNumber * -0.0001,
   });
 
   chen2 = new chen({
@@ -50,34 +46,64 @@ function createCombiner(macroIterationNumber) {
     dt: 0.01,
   });
 
-  const baseDr = 0.1;
+  const golden = (1 + Math.sqrt(5)) / 2;
+
+  const baseDr = 0.01;
   circle1 = new circ({
     dr: baseDr,
   });
+
   circle2 = new circ({
-    dr: baseDr / 1.1,
+    dr: -(baseDr / golden),
   });
   circle3 = new circ({
-    dr: baseDr / 2.2,
+    dr: -baseDr * golden,
   });
   circle4 = new circ({
-    dr: baseDr / 3.3,
+    dr: -baseDr * golden,
   });
   circle5 = new circ({
-    dr: baseDr / 4.4,
+    dr: -baseDr / 4.4,
   });
 
-  rect = new rectangle({
+  rect1 = new rectangle({
+    height: 10,
+    width: 10,
+    stepSize: 0.1,
+  });
+
+  rect2 = new rectangle({
     height: 100,
     width: 100,
-    stepSize: 1,
+    stepSize: 0.5,
   });
 
+  rect3 = new rectangle({
+    height: 100,
+    width: 100,
+    stepSize: 0.25,
+  });
+
+  const lorenz = createAttractorStepper("Rossler", [0.1, 0, 0, 0.02]);
+  const lorenz1 = createAttractorStepper("Lorenz");
   const perlin1 = new perlin({ dr: 0.001 + macroIterationNumber * 0.001 });
 
+  const corners1 = new corners({ x: 10, y: 10, z: 1, macroIterationNumber });
+
   return new combiner({
-    steppers: [chen1],
-    amplitudes: [0.8, 1, 0.1, 1, 1, 1, 1, 1],
+    steppers: [lorenz, circle4],
+    amplitudes: [
+      1 / golden / golden,
+      1,
+      1 / (golden * golden),
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+    ],
     rotations: [0, 0, 0, 0, 0],
     offsets: [
       createVector(0, 0, 0),
@@ -91,7 +117,7 @@ function createCombiner(macroIterationNumber) {
     baseWidth,
     macroIterationRotation,
     iterationRotation,
-    flipEvery: 1,
+    flipEvery: 1000,
   });
 }
 
@@ -104,7 +130,10 @@ function draw() {
 
   numberOfIterations++;
 
-  if (numberOfIterations < 4 || numberOfIterations < beginAtIteration) {
+  if (
+    numberOfIterations < 4 ||
+    numberOfIterations % refreshRate < beginAtIteration
+  ) {
     return;
   }
 

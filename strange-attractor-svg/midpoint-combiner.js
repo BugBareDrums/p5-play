@@ -1,3 +1,7 @@
+const onOffRate = 100;
+const onOffOffset = 0;
+const onRatio = 1;
+
 function combiner({
   steppers,
   colour,
@@ -23,6 +27,21 @@ function combiner({
 
     rotateAngleRadians = macroIterationRotation * (PI / 180);
 
+    const rotate3dVectorDegrees = createVector(0, 0, 0);
+
+    // rotate last by rotate3dVectorDegrees
+    last.x =
+      last.x * cos(rotate3dVectorDegrees.x * (PI / 180)) -
+      last.y * sin(rotate3dVectorDegrees.x * (PI / 180));
+
+    last.y =
+      last.x * sin(rotate3dVectorDegrees.y * (PI / 180)) +
+      last.y * cos(rotate3dVectorDegrees.y * (PI / 180));
+
+    last.z =
+      last.z * cos(rotate3dVectorDegrees.z * (PI / 180)) -
+      last.x * sin(rotate3dVectorDegrees.z * (PI / 180));
+
     const rotated = createVector(
       last.x * cos(rotateAngleRadians * macroIterationNumber) -
         last.y * sin(rotateAngleRadians * macroIterationNumber),
@@ -42,11 +61,11 @@ function combiner({
       rotated.x * sin(iterationRotationRadians) +
       rotated.y * cos(iterationRotationRadians);
 
-    // flip x every 1 iterations
-    rotated.x = rotated.x * (-1 + 2 * (macroIterationNumber % 2));
+    // // flip x every 1 iterations
+    // rotated.x = rotated.x * (-1 + 2 * (macroIterationNumber % 2));
 
-    // flip y half the time, half the speed of x
-    rotated.y = rotated.y * (-1 + 2 * ((macroIterationNumber + 1) % 4 > 1));
+    // // flip y half the time, half the speed of x
+    // rotated.y = rotated.y * (-1 + 2 * ((macroIterationNumber + 1) % 4 > 1));
 
     allPoints.push(rotated);
     this.vectorWindow.push(rotated);
@@ -80,7 +99,7 @@ function combiner({
 
     // find midpoint of all vectors
     const midpoint = rotated.reduce(
-      (acc, vector, index) => acc.add(vector.mult(amplitudes[index])),
+      (acc, vector, index) => acc.add(vector.mult(amplitudes[index] ?? 1)),
       createVector(0, 0, 0)
     );
     midpoint.div(rotated.length);
@@ -89,9 +108,9 @@ function combiner({
   };
 
   this.show = function () {
-    // if ((numberOfIterations + onOffOffset) % onOffRate > onOffRate * onRatio) {
-    //   return;
-    // }
+    if ((numberOfIterations + onOffOffset) % onOffRate > onOffRate * onRatio) {
+      return;
+    }
 
     if (this.vectorWindow.length < 4) {
       return;
@@ -99,7 +118,7 @@ function combiner({
 
     noFill();
 
-    let weight = (this.vectorWindow[0].z + 0.9 / 2) * baseWidth;
+    let weight = ((this.vectorWindow[0].z + 0.3) / 2) * baseWidth;
 
     const mapToScreen = (value, dimension) => (value + 1) * (dimension / 2);
 
