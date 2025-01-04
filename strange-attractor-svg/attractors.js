@@ -12,12 +12,12 @@ function createAttractorStepper(
 
   function stepper() {
     this.params = attractor.params;
-    this.x = this.params[0];
-    this.y = this.params[1];
-    this.z = this.params[2];
+    this.x = 1;
+    this.y = 1;
+    this.z = 1;
 
     this.step = function () {
-      const poo = attractor.fn(
+      attractor.fn(
         this,
         this.params[0],
         this.params[1],
@@ -40,6 +40,19 @@ const create = function (name, params, fn, iterations) {
   attractors[name] = { name, params, fn, iterations };
 };
 
+const atts = {
+  "Lorenz 84": {
+    initialParams: [-1.2346115, 0.6818416, -0.9457178, 0.48372614, -0.355516],
+    fn: function (t, e, n, a, r, o) {
+      return {
+        x: t.x + o * (-e * t.x - t.y * t.y - t.z * t.z + e * a),
+        y: t.y + o * (-t.y + t.x * t.y - n * t.x * t.z + r),
+        z: t.z + o * (-t.z + n * t.x * t.y + t.x * t.z),
+      };
+    },
+  },
+};
+
 create(
   "Lorenz 84",
   [-1.2346115, 0.6818416, -0.9457178, 0.48372614, -0.355516],
@@ -59,13 +72,10 @@ create(
   "Lorenz",
   [4.6, 18.5, 0.6, 0.012],
   function (t, e, n, a, r) {
-    var o = t.x,
-      i = t.y,
-      c = t.z;
     return (
-      (t.x = o + r * (e * (i - o))),
-      (t.y = i + r * (o * (n - c) - i)),
-      (t.z = c + r * (o * i - a * c)),
+      (t.x = t.x + r * (e * (t.y - t.x))),
+      (t.y = t.y + r * (t.x * (n - t.z) - t.y)),
+      (t.z = t.z + r * (t.x * t.y - a * t.z)),
       t
     );
   },
@@ -228,15 +238,11 @@ create(
   },
   6
 );
-create("Thomas", [0.19, -1.9], function (t, e, n) {
-  var a = Math.sin,
-    r = t.x,
-    o = t.y,
-    i = t.z;
+create("Thomas", [0.19], function (t, b) {
   return (
-    (t.x = r + n * (e * r + a(o))),
-    (t.y = o + n * (e * o + a(i))),
-    (t.z = i + n * (e * i + a(r))),
+    (t.x = t.x - b * t.x + Math.sin(t.y)),
+    (t.y = t.y - b * t.y + Math.sin(t.z)),
+    (t.z = t.z - b * t.z + Math.sin(t.x)),
     t
   );
 });
