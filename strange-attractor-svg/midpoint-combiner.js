@@ -21,6 +21,9 @@ function combiner({
   rotations,
   offsets,
   macroIterationRotation = 0,
+  xyRotation = 0,
+  iterationRotation = 0,
+  combinerIndex,
 }) {
   const vectorWindow = [];
 
@@ -30,7 +33,7 @@ function combiner({
 
     const combined = combination(vectors);
 
-    allPoints.push(combined);
+    allPoints[combinerIndex].push(combined);
     vectorWindow.push(combined);
 
     if (vectorWindow.length > 4) {
@@ -41,6 +44,11 @@ function combiner({
   }
 
   function combination(vectors) {
+    if (vectors.some((vector) => vector === undefined)) {
+      console.log("undefined vector");
+      return undefined;
+    }
+
     vectors = vectors.map((vector, index) =>
       rotateVector2d(vector, rotations[index])
     );
@@ -49,16 +57,16 @@ function combiner({
 
     vectors = applyAmplitudes(vectors, amplitudes);
 
-    let combinedVector = multiply(vectors);
+    let combinedVector = midpoint(vectors);
 
     const macroIterationNumber =
       Math.floor(numberOfIterations / refreshRate) + 1;
 
-    combinedVector = rotateVector3d(combinedVector, {
-      x: 0,
-      y: 0,
-      z: 0,
-    });
+    combinedVector = rotateAround(
+      combinedVector,
+      createVector(1, 0, 1),
+      macroIterationNumber * xyRotation
+    );
 
     combinedVector = rotateVector2d(
       combinedVector,
@@ -111,4 +119,29 @@ function rotateVector3d(vector, angles = createVector(0, 0, 0)) {
     vector.z * cos(angles.z * (PI / 180)) -
       vector.x * sin(angles.z * (PI / 180))
   );
+}
+
+function rotateAround(vect, axis, angle) {
+  // Create copies to avoid modifying original vectors
+  let v = vect.copy();
+  let a = axis.copy().normalize();
+
+  // Rodrigues rotation formula components
+  let cosTheta = cos(angle);
+  let sinTheta = sin(angle);
+
+  // First term: v * cos(θ)
+  let term1 = v.copy().mult(cosTheta);
+
+  // Second term: (axis × v) * sin(θ)
+  let term2 = a.copy().cross(v).mult(sinTheta);
+
+  // Third term: axis * (axis · v) * (1 - cos(θ))
+  let term3 = a
+    .copy()
+    .mult(a.dot(v))
+    .mult(1 - cosTheta);
+
+  // Combine all terms
+  return term1.add(term2).add(term3);
 }

@@ -20,6 +20,12 @@ function savePng() {
 
 function saveGcode() {
   if (save) {
+    const points = allPoints[0].map((point) =>
+      point ? { x: point.x, y: point.y, z: point.z } : undefined
+    );
+
+    console.log(points);
+
     fetch("http://localhost:4004/vector", {
       method: "POST",
       headers: {
@@ -29,13 +35,9 @@ function saveGcode() {
         outputBounds: {
           x: { min: 0, max: 300 },
           y: { min: 0, max: 300 },
-          z: { min: 0, max: 3 },
+          z: { min: -2, max: 0 },
         },
-        vectors: allPoints.map((point) => ({
-          x: point.x,
-          y: point.y,
-          z: point.z,
-        })),
+        vectors: points,
       }),
     })
       .then((response) => response.json())

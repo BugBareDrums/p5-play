@@ -1,15 +1,20 @@
-let combiner1;
+let combiners;
 let save = true;
-const attractorName = "thomas";
+const attractorName = "gcode-magic";
 
+const golden = (1 + Math.sqrt(5)) / 2;
+
+const numberOfCombiners = 1;
 let numberOfIterations = 0;
-const refreshRate = 100;
-let maxIterations = refreshRate * 100;
+const refreshRate = 1000;
+let maxIterations = refreshRate * 20;
 let beginAtIteration = 0;
-const baseWidth = 4;
-const baseAmplitude = 0.05;
-const macroIterationRotation = 60;
+const baseWidth = 5;
+const baseAmplitude = 0.5;
+const macroIterationRotation = 0;
 const iterationRotation = 0;
+
+const xyRotation = 0;
 
 const onOffRate = 10;
 const onOffOffset = 0;
@@ -17,8 +22,21 @@ const onRatio = 1;
 
 const allPoints = [];
 
+for (let i = 0; i < numberOfCombiners; i++) {
+  allPoints.push([]);
+}
+
+const rotateArray = function (arr, k) {
+  let copy = arr.slice();
+  for (let i = 0; i < k; i++) {
+    copy.unshift(copy.pop());
+  }
+
+  return copy;
+};
+
 function setup() {
-  createCanvas(2000, 2000);
+  createCanvas(3000, 3000);
   document.getElementById("save-gcode").addEventListener("click", saveGcode);
   document.getElementById("save-png").addEventListener("click", savePng);
   document.getElementById("stop").addEventListener("click", () => {
@@ -34,7 +52,7 @@ function setup() {
   });
 }
 
-function createCombiner(macroIterationNumber) {
+function createCombiners(macroIterationNumber) {
   const uiValues = getUiValues();
   chen1 = new chen({
     xx: 0.11 + macroIterationNumber * -0.1,
@@ -56,9 +74,7 @@ function createCombiner(macroIterationNumber) {
     dt: 0.01,
   });
 
-  const golden = (1 + Math.sqrt(5)) / 2;
-
-  const baseDr = uiValues.dr * 1;
+  const baseDr = uiValues.dr * 3;
   circle1 = new circ({
     dr: baseDr,
   });
@@ -94,42 +110,66 @@ function createCombiner(macroIterationNumber) {
     stepSize: 0.25,
   });
 
-  const thomas = createAttractorStepper("Thomas", [0.05]);
-  const lorenz1 = createAttractorStepper("Lorenz");
-  const perlin1 = new perlin({ dr: 0.001 + macroIterationNumber * 0.001 });
+  const thomas = createAttractorStepper("Thomas", [
+    0.003 * macroIterationNumber,
+  ]);
+  //const lorenz1 = createAttractorStepper("Lorenz");
+  const perlin1 = new perlin({ dr: 0.001 + macroIterationNumber * 0.01 });
 
   const corners1 = new corners({ x: 10, y: 10, z: 1, macroIterationNumber });
 
-  const amplitude = baseAmplitude * golden ** (macroIterationNumber / 1.5);
-
-  return new combiner({
-    steppers: [thomas],
-    amplitudes: [
-      amplitude,
-      amplitude / golden,
-      amplitude / golden / golden,
-      amplitude / golden / golden / golden,
-    ],
-    rotations: [0, 0, 0, 0, 0],
-    offsets: [
-      createVector(0, 0, 0),
-      createVector(0, 0, 0),
-      createVector(0, 0, 0),
-      createVector(0, 0, 0),
-    ],
-
-    macroIterationRotation,
-    iterationRotation,
-    flipEvery: 1000,
+  const lines = new lineScan({
+    length: 100,
+    gap: 2,
+    stepSize: 1,
+    zStepSize: 1,
   });
+
+  const amplitude = baseAmplitude * golden ** macroIterationNumber;
+  //const amplitude = baseAmplitude;
+
+  const combiners = [];
+
+  const steppers = [lines, circle1];
+
+  for (let i = 0; i < numberOfCombiners; i++) {
+    combiners.push(
+      new combiner({
+        steppers: rotateArray(steppers, i),
+        amplitudes: [
+          2,
+          0.04,
+          amplitude / golden / golden,
+          amplitude / golden / golden / golden,
+          amplitude / golden / golden / golden / golden,
+        ],
+        rotations: [0, 0, 0, 0, 0],
+        offsets: [
+          createVector(0, 0, 0),
+          createVector(0, 0, 0),
+          createVector(0, 0, 0),
+          createVector(0, 0, 0),
+          createVector(0, 0, 0),
+        ],
+        macroIterationRotation,
+        xyRotation,
+        iterationRotation,
+        flipEvery: 1000,
+        combinerIndex: i,
+      })
+    );
+  }
+
+  return combiners;
 }
 
 function draw() {
   const macroIterationNumber = Math.floor(numberOfIterations / refreshRate) + 1;
+
   if (numberOfIterations % refreshRate === 0) {
-    combiner1 = createCombiner(macroIterationNumber);
+    combiners = createCombiners(macroIterationNumber);
   }
-  var vectorWindow = combiner1.step();
+  var vectorWindows = combiners.map((c) => c.step());
 
   numberOfIterations++;
 
@@ -144,30 +184,36 @@ function draw() {
     noLoop();
   }
 
-  show(vectorWindow);
+  for (const vectorWindow of vectorWindows) {
+    show(vectorWindow);
+  }
 }
 
 function show(vectorWindow) {
+  noFill();
   if ((numberOfIterations + onOffOffset) % onOffRate > onOffRate * onRatio) {
     return;
   }
 
-  if (vectorWindow.length < 4) {
+  if (
+    vectorWindow.some((vector) => vector === undefined) ||
+    vectorWindow.length < 4
+  ) {
     return;
   }
 
-  noFill();
-  let weight = ((vectorWindow[0].z + 0.3) / 2) * baseWidth;
-  const mapToScreen = (value, dimension) => (value + 1) * (dimension / 2);
-
-  const w = vectorWindow;
-  stroke("#000");
-
+  let weight = vectorWindow[0].z * baseWidth;
   if (weight < 0) {
     return;
   }
 
   strokeWeight(weight);
+
+  const mapToScreen = (value, dimension) => (value + 1) * (dimension / 2);
+
+  const w = vectorWindow;
+
+  stroke("#000");
 
   curve(
     mapToScreen(w[0].x, width),

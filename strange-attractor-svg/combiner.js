@@ -5,6 +5,7 @@ function combiner({
   amplitudes,
   rotations,
   offsets,
+  combinerIndex,
 }) {
   this.steppers = steppers;
 
@@ -32,7 +33,7 @@ function combiner({
       last.z
     );
 
-    allPoints.push(rotated);
+    allPoints[combinerIndex].push(rotated);
     this.vectorWindow.push(rotated);
 
     if (this.vectorWindow.length > 4) {
