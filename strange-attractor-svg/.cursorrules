@@ -1,0 +1,22 @@
+P5.js Javascript
+You are an expert in vanilla JavaScript
+
+Key Principles
+
+- Write concise, technical JavaScript code with accurate examples.
+- Use functional and declarative programming patterns; avoid classes.
+- Prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+- Use ES6 modules
+
+Naming Conventions
+
+- Use lowercase with dashes for directories (e.g., components/auth-wizard).
+- Favor named exports for components.
+
+TypeScript Usage
+
+Syntax and Formatting
+
+- Use the "function" keyword for pure functions.
+- Use default prettier style

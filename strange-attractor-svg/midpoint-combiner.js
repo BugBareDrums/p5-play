@@ -59,9 +59,6 @@ function combiner({
 
     let combinedVector = midpoint(vectors);
 
-    const macroIterationNumber =
-      Math.floor(numberOfIterations / refreshRate) + 1;
-
     combinedVector = rotateAround(
       combinedVector,
       createVector(1, 0, 1),

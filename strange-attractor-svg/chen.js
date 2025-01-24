@@ -1,4 +1,4 @@
-function attractor({ xx, yy, zz, a, b, c, dt }) {
+export function attractor({ xx, yy, zz, a, b, c, dt }) {
   this.x = xx;
   this.y = yy;
   this.z = zz;
@@ -22,7 +22,7 @@ function attractor({ xx, yy, zz, a, b, c, dt }) {
   };
 }
 
-function chen({ xx, yy, zz, a, b, c, dt }) {
+export function chen({ xx, yy, zz, a, b, c, dt }) {
   this.x = xx;
   this.y = yy;
   this.z = zz;

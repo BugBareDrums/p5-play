@@ -1,4 +1,4 @@
-function corners({ x, y, z, macroIterationNumber }) {
+export function corners({ x, y, z, macroIterationNumber }) {
   const largest = Math.max(x, y, z);
 
   this.step = function () {

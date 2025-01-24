@@ -1,4 +1,4 @@
-function lineScan({ length, gap, stepSize, zStepSize, skipCount = 0 }) {
+export function lineScan({ length, gap, stepSize, zStepSize, skipCount = 0 }) {
   this.x = 0;
   this.y = 0;
   this.z = 0;
