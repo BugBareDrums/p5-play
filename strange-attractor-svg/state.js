@@ -1,12 +1,3 @@
-export const state = {
-  combiners: [],
-  allPoints: [],
-  numberOfIterations: 0,
-  vectorWindows: [],
-  save: true,
-  macroIterationNumber: 0,
-};
-
 export const constants = {
   attractorName: "gcode-magic",
   golden: (1 + Math.sqrt(5)) / 2,
@@ -23,3 +14,16 @@ export const constants = {
   onOffOffset: 0,
   onRatio: 1,
 };
+
+export const state = {
+  combiners: [],
+  allPoints: [],
+  numberOfIterations: 0,
+  vectorWindows: [],
+  save: true,
+  macroIterationNumber: 0,
+};
+
+for (let i = 0; i < constants.numberOfCombiners; i++) {
+  state.allPoints.push([]);
+}

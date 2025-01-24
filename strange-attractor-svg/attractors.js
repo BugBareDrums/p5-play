@@ -1,3 +1,5 @@
+import { normaliseVector } from "./utils.js";
+
 const attractors = {
   "Lorenz 84": {
     initialParams: [-1.2346115, 0.6818416, -0.9457178, 0.48372614, -0.355516],
@@ -303,10 +305,7 @@ export function createAttractorStepper(
     };
 
     this.getNormalisedVector = function () {
-      return normaliseVector(
-        p.createVector(this.vector.x, this.vector.y, this.vector.z),
-        attractor.typicalMax ?? 4
-      );
+      return normaliseVector(this.vector, attractor.typicalMax ?? 4);
     };
   }
 

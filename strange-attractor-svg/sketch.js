@@ -16,11 +16,6 @@ export const createSetup = (p) => {
     document.getElementById("start").addEventListener("click", () => {
       p.loop();
     });
-    document.getElementById("reset").addEventListener("click", () => {
-      state.numberOfIterations = 0;
-      state.allPoints = [];
-      p.loop();
-    });
   };
 };
 
@@ -34,6 +29,8 @@ export const createDraw = (p) => {
     }
 
     state.numberOfIterations++;
+
+    state.vectorWindows = state.combiners.map((c) => c.step());
 
     if (
       state.numberOfIterations < 4 ||

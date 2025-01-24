@@ -67,3 +67,12 @@ export function rotateArray(arr, k) {
 
   return copy;
 }
+
+export function normaliseVector(v, max) {
+  const normalise = (v) => v / max;
+  return {
+    x: normalise(v.x),
+    y: normalise(v.y),
+    z: normalise((v.z + max) / 2),
+  };
+}

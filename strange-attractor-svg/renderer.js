@@ -36,8 +36,10 @@ import { state, constants } from "./state.js";
 
 export function show(vectorWindow, p) {
   console.log("draw");
+  const { onOffRate, onOffOffset, onRatio } = constants;
+  const { numberOfIterations } = state;
   p.push();
-  noFill();
+  p.noFill();
   if ((numberOfIterations + onOffOffset) % onOffRate > onOffRate * onRatio) {
     return;
   }
@@ -49,20 +51,20 @@ export function show(vectorWindow, p) {
     return;
   }
 
-  let weight = vectorWindow[0].z * baseWidth;
+  let weight = vectorWindow[0].z * constants.baseWidth;
   if (weight < 0) {
     return;
   }
 
-  strokeWeight(weight);
+  p.strokeWeight(weight);
 
   const mapToScreen = (value, dimension) => (value + 1) * (dimension / 2);
 
   const w = vectorWindow;
 
-  stroke("#000");
+  p.stroke("#000");
 
-  curve(
+  p.curve(
     mapToScreen(w[0].x, p.width),
     mapToScreen(w[0].y, p.height),
     mapToScreen(w[1].x, p.width),

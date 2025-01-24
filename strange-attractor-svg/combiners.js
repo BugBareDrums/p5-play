@@ -106,7 +106,7 @@ export function createCombiners(p) {
 
   for (let i = 0; i < numberOfCombiners; i++) {
     combiners.push(
-      new combiner({
+      new combiner(p, {
         steppers: rotateArray(steppers, i),
         amplitudes: [
           2,

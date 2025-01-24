@@ -1,3 +1,5 @@
+import { normaliseVector } from "./utils.js";
+
 export function rectangle({ height, width, stepSize }) {
   this.x = 0 - width / 2;
   this.y = 0 - height / 2;
@@ -23,7 +25,7 @@ export function rectangle({ height, width, stepSize }) {
 
   this.getNormalisedVector = function () {
     return normaliseVector(
-      createVector(this.x * 2, this.y * 2, this.z * 2),
+      { x: this.x * 2, y: this.y * 2, z: this.z * 2 },
       Math.max(width, height)
     );
   };

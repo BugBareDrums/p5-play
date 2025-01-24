@@ -1,3 +1,5 @@
+import { normaliseVector } from "./utils.js";
+
 export function attractor({ xx, yy, zz, a, b, c, dt }) {
   this.x = xx;
   this.y = yy;
@@ -18,7 +20,7 @@ export function attractor({ xx, yy, zz, a, b, c, dt }) {
   };
 
   this.getNormalisedVector = function () {
-    return normaliseVector(createVector(this.x, this.y, this.z), 30);
+    return normaliseVector({ x: this.x, y: this.y, z: this.z }, 30);
   };
 }
 

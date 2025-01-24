@@ -1,3 +1,5 @@
+import { normaliseVector } from "./utils.js";
+
 export function lineScan({ length, gap, stepSize, zStepSize, skipCount = 0 }) {
   this.x = 0;
   this.y = 0;
@@ -18,7 +20,7 @@ export function lineScan({ length, gap, stepSize, zStepSize, skipCount = 0 }) {
     }
 
     return normaliseVector(
-      createVector(this.x - length / 2, this.y - length / 2, this.z),
+      { x: this.x - length / 2, y: this.y - length / 2, z: this.z },
       length
     );
   };

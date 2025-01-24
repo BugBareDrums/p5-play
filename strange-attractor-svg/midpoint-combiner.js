@@ -1,39 +1,48 @@
-const midpoint = (vectors) => {
+import { state, constants } from "./state.js";
+
+const midpoint = (p, vectors) => {
   let combined = vectors.reduce(
     (acc, vector) => acc.add(vector),
-    createVector(0, 0, 0)
+    p.createVector(0, 0, 0)
   );
   combined.div(vectors.length);
   return combined;
 };
 
-const multiply = (vectors) => {
+const multiply = (p, vectors) => {
   let combined = vectors.reduce((acc, vector) => {
-    return createVector(acc.x * vector.x, acc.y * vector.y, acc.z * vector.z);
-  }, createVector(1, 1, 1));
+    return p.createVector(acc.x * vector.x, acc.y * vector.y, acc.z * vector.z);
+  }, p.createVector(1, 1, 1));
   combined.div(vectors.length);
   return combined;
 };
 
-export function combiner({
-  steppers,
-  amplitudes,
-  rotations,
-  offsets,
-  macroIterationRotation = 0,
-  xyRotation = 0,
-  iterationRotation = 0,
-  combinerIndex,
-}) {
+export function combiner(
+  p,
+  {
+    steppers,
+    amplitudes,
+    rotations,
+    offsets,
+
+    combinerIndex,
+  }
+) {
+  const {
+    macroIterationRotation = 0,
+    xyRotation = 0,
+    iterationRotation = 0,
+  } = constants;
+
   const vectorWindow = [];
 
   function step() {
     steppers.forEach((stepper) => stepper.step());
     let vectors = steppers.map((stepper) => stepper.getNormalisedVector());
 
-    const combined = combination(vectors);
+    const combined = combination(p, vectors);
 
-    allPoints[combinerIndex].push(combined);
+    state.allPoints[combinerIndex].push(combined);
     vectorWindow.push(combined);
 
     if (vectorWindow.length > 4) {
@@ -43,36 +52,38 @@ export function combiner({
     return vectorWindow;
   }
 
-  function combination(vectors) {
+  function combination(p, vectors) {
     if (vectors.some((vector) => vector === undefined)) {
       console.log("undefined vector");
       return undefined;
     }
 
     vectors = vectors.map((vector, index) =>
-      rotateVector2d(vector, rotations[index])
+      rotateVector2d(p, vector, rotations[index])
     );
 
-    vectors = applyOffsets(vectors, offsets);
+    vectors = applyOffsets(p, vectors, offsets);
 
     vectors = applyAmplitudes(vectors, amplitudes);
 
-    let combinedVector = midpoint(vectors);
+    let combinedVector = midpoint(p, vectors);
 
     combinedVector = rotateAround(
       combinedVector,
-      createVector(1, 0, 1),
-      macroIterationNumber * xyRotation
+      p.createVector(1, 0, 1),
+      state.macroIterationNumber * xyRotation
     );
 
     combinedVector = rotateVector2d(
+      p,
       combinedVector,
-      macroIterationNumber * macroIterationRotation
+      state.macroIterationNumber * macroIterationRotation
     );
 
     combinedVector = rotateVector2d(
+      p,
       combinedVector,
-      numberOfIterations * iterationRotation
+      state.numberOfIterations * iterationRotation
     );
 
     return combinedVector;
@@ -87,9 +98,9 @@ function applyAmplitudes(vectors, amplitudes) {
   return vectors.map((vector, index) => vector.mult(amplitudes[index] ?? 1));
 }
 
-function applyOffsets(vectors, offsets) {
+function applyOffsets(p, vectors, offsets) {
   return vectors.map((vector, index) =>
-    createVector(
+    p.createVector(
       vector.x + offsets[index].x,
       vector.y + offsets[index].y,
       vector.z + offsets[index].z
@@ -97,24 +108,24 @@ function applyOffsets(vectors, offsets) {
   );
 }
 
-function rotateVector2d(vector, angle) {
-  const angleRadians = angle * (PI / 180);
+function rotateVector2d(p, vector, angle) {
+  const angleRadians = angle * (Math.PI / 180);
 
-  return createVector(
-    vector.x * cos(angleRadians) - vector.y * sin(angleRadians),
-    vector.x * sin(angleRadians) + vector.y * cos(angleRadians),
+  return p.createVector(
+    vector.x * Math.cos(angleRadians) - vector.y * Math.sin(angleRadians),
+    vector.x * Math.sin(angleRadians) + vector.y * Math.cos(angleRadians),
     vector.z
   );
 }
 
-function rotateVector3d(vector, angles = createVector(0, 0, 0)) {
-  return createVector(
-    vector.x * cos(angles.x * (PI / 180)) -
-      vector.y * sin(angles.x * (PI / 180)),
-    vector.x * sin(angles.y * (PI / 180)) +
-      vector.y * cos(angles.y * (PI / 180)),
-    vector.z * cos(angles.z * (PI / 180)) -
-      vector.x * sin(angles.z * (PI / 180))
+function rotateVector3d(vector, angles = p.createVector(0, 0, 0)) {
+  return p.createVector(
+    vector.x * Math.cos(angles.x * (Math.PI / 180)) -
+      vector.y * Math.sin(angles.x * (Math.PI / 180)),
+    vector.x * Math.sin(angles.y * (Math.PI / 180)) +
+      vector.y * Math.cos(angles.y * (Math.PI / 180)),
+    vector.z * Math.cos(angles.z * (Math.PI / 180)) -
+      vector.x * Math.sin(angles.z * (Math.PI / 180))
   );
 }
 
@@ -124,8 +135,8 @@ function rotateAround(vect, axis, angle) {
   let a = axis.copy().normalize();
 
   // Rodrigues rotation formula components
-  let cosTheta = cos(angle);
-  let sinTheta = sin(angle);
+  let cosTheta = Math.cos(angle);
+  let sinTheta = Math.sin(angle);
 
   // First term: v * cos(θ)
   let term1 = v.copy().mult(cosTheta);
