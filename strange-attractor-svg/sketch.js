@@ -6,7 +6,7 @@ const golden = (1 + Math.sqrt(5)) / 2;
 
 const numberOfCombiners = 1;
 let numberOfIterations = 0;
-const refreshRate = 1000;
+const refreshRate = 100;
 let maxIterations = refreshRate * 20;
 let beginAtIteration = 0;
 const baseWidth = 5;
@@ -120,9 +120,10 @@ function createCombiners(macroIterationNumber) {
 
   const lines = new lineScan({
     length: 100,
-    gap: 2,
+    gap: 5,
     stepSize: 1,
     zStepSize: 1,
+    skipCount: numberOfIterations,
   });
 
   const amplitude = baseAmplitude * golden ** macroIterationNumber;
@@ -130,7 +131,7 @@ function createCombiners(macroIterationNumber) {
 
   const combiners = [];
 
-  const steppers = [lines, circle1];
+  const steppers = [lines, thomas];
 
   for (let i = 0; i < numberOfCombiners; i++) {
     combiners.push(

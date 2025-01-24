@@ -1,8 +1,8 @@
-function lineScan({ length, gap, stepSize, zStepSize }) {
+function lineScan({ length, gap, stepSize, zStepSize, skipCount = 0 }) {
   this.x = 0;
   this.y = 0;
   this.z = 0;
-  this.counter = 0;
+  this.counter = skipCount;
 
   this.step = function () {
     this.counter++;
@@ -13,7 +13,7 @@ function lineScan({ length, gap, stepSize, zStepSize }) {
   };
 
   this.getNormalisedVector = function () {
-    if (this.x < 2 || this.x > length - 2) {
+    if (this.x < 1) {
       return undefined;
     }
 
