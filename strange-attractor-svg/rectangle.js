@@ -1,4 +1,4 @@
-function rectangle({ height, width, stepSize }) {
+export function rectangle({ height, width, stepSize }) {
   this.x = 0 - width / 2;
   this.y = 0 - height / 2;
   this.z = 1;

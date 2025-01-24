@@ -15,7 +15,7 @@ const multiply = (vectors) => {
   return combined;
 };
 
-function combiner({
+export function combiner({
   steppers,
   amplitudes,
   rotations,

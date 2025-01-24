@@ -265,9 +265,10 @@ const attractors = {
   },
 };
 
-function createAttractorStepper(
+export function createAttractorStepper(
   attractorName,
-  paramMods = [0, 0, 0, 0, 0, 0, 0]
+  paramMods = [0, 0, 0, 0, 0, 0, 0],
+  p
 ) {
   const attractor = attractors[attractorName];
 
@@ -278,7 +279,7 @@ function createAttractorStepper(
   }
 
   function stepper() {
-    this.vector = createVector(
+    this.vector = p.createVector(
       attractor.initialPosition.x,
       attractor.initialPosition.y,
       attractor.initialPosition.z
@@ -303,7 +304,7 @@ function createAttractorStepper(
 
     this.getNormalisedVector = function () {
       return normaliseVector(
-        createVector(this.vector.x, this.vector.y, this.vector.z),
+        p.createVector(this.vector.x, this.vector.y, this.vector.z),
         attractor.typicalMax ?? 4
       );
     };

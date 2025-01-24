@@ -30,7 +30,7 @@ export const createDraw = (p) => {
       Math.floor(state.numberOfIterations / constants.refreshRate) + 1;
 
     if (state.numberOfIterations % constants.refreshRate === 0) {
-      state.combiners = createCombiners(macroIterationNumber, p);
+      state.combiners = createCombiners(p);
     }
 
     state.numberOfIterations++;

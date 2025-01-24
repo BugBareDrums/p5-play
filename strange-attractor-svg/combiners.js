@@ -1,10 +1,25 @@
-import { getUiValues, rotateArray } from "./utils";
+import { getUiValues, rotateArray } from "./utils.js";
+import { combiner } from "./midpoint-combiner.js";
 import { state, constants } from "./state.js";
+import { chen } from "./chen.js";
+import { circ } from "./circle.js";
+import { rectangle } from "./rectangle.js";
+import { createAttractorStepper } from "./attractors.js";
+import { perlin } from "./perlin.js";
+import { corners } from "./corners.js";
+import { lineScan } from "./line-scan.js";
 
-export function createCombiners() {
-  const { golden, numberOfCombiners, baseAmplitude } = constants;
+export function createCombiners(p) {
+  const {
+    golden,
+    numberOfCombiners,
+    baseAmplitude,
+    macroIterationRotation,
+    xyRotation,
+    iterationRotation,
+  } = constants;
   const uiValues = getUiValues();
-  chen1 = new chen({
+  const chen1 = new chen({
     xx: 0.11 + state.macroIterationNumber * -0.1,
     yy: 0.2 + state.macroIterationNumber * -0.1,
     zz: -16 + state.macroIterationNumber * -0.2,
@@ -14,7 +29,7 @@ export function createCombiners() {
     dt: 0.008 + state.macroIterationNumber * -0.0001,
   });
 
-  chen2 = new chen({
+  const chen2 = new chen({
     xx: 0.1,
     yy: 0.33 + state.macroIterationNumber * 0.01,
     zz: -15.5,
@@ -25,45 +40,46 @@ export function createCombiners() {
   });
 
   const baseDr = uiValues.dr * 3;
-  circle1 = new circ({
+  const circle1 = new circ({
     dr: baseDr,
   });
 
-  circle2 = new circ({
+  const circle2 = new circ({
     dr: -(baseDr / golden),
   });
-  circle3 = new circ({
+  const circle3 = new circ({
     dr: baseDr * golden,
   });
-  circle4 = new circ({
+  const circle4 = new circ({
     dr: baseDr / golden / golden,
   });
-  circle5 = new circ({
+  const circle5 = new circ({
     dr: -baseDr / 4.4,
   });
 
-  rect1 = new rectangle({
+  const rect1 = new rectangle({
     height: 10,
     width: 10,
     stepSize: 0.1,
   });
 
-  rect2 = new rectangle({
+  const rect2 = new rectangle({
     height: 100,
     width: 100,
     stepSize: 0.5,
   });
 
-  rect3 = new rectangle({
+  const rect3 = new rectangle({
     height: 100,
     width: 100,
     stepSize: 0.25,
   });
 
-  const thomas = createAttractorStepper("Thomas", [
-    0.003 * state.macroIterationNumber,
-  ]);
-  //const lorenz1 = createAttractorStepper("Lorenz");
+  const thomas = createAttractorStepper(
+    "Thomas",
+    [0.003 * state.macroIterationNumber],
+    p
+  );
   const perlin1 = new perlin({ dr: 0.001 + state.macroIterationNumber * 0.01 });
 
   const corners1 = new corners({
@@ -78,7 +94,7 @@ export function createCombiners() {
     gap: 5,
     stepSize: 1,
     zStepSize: 1,
-    skipCount: numberOfIterations,
+    skipCount: state.numberOfIterations,
   });
 
   const amplitude = baseAmplitude * golden ** state.macroIterationNumber;
@@ -101,11 +117,11 @@ export function createCombiners() {
         ],
         rotations: [0, 0, 0, 0, 0],
         offsets: [
-          createVector(0, 0, 0),
-          createVector(0, 0, 0),
-          createVector(0, 0, 0),
-          createVector(0, 0, 0),
-          createVector(0, 0, 0),
+          p.createVector(0, 0, 0),
+          p.createVector(0, 0, 0),
+          p.createVector(0, 0, 0),
+          p.createVector(0, 0, 0),
+          p.createVector(0, 0, 0),
         ],
         macroIterationRotation,
         xyRotation,

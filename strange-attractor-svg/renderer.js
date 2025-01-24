@@ -1,40 +1,41 @@
 import { state, constants } from "./state.js";
 
+// export function show(vectorWindow, p) {
+//   p.push();
+//   p.translate(vectorWindow.x, vectorWindow.y);
+
+//   const currentPoints = state.allPoints[state.allPoints.length - 1];
+
+//   p.noFill();
+//   p.stroke(0);
+//   p.strokeWeight(1);
+
+//   for (let i = 0; i < currentPoints.length; i++) {
+//     const points = currentPoints[i];
+
+//     p.beginShape();
+//     for (let j = 0; j < points.length; j++) {
+//       const point = points[j];
+
+//       const shouldDraw =
+//         Math.floor(j / constants.onOffRate + constants.onOffOffset) % 2 <
+//         constants.onRatio;
+
+//       if (shouldDraw) {
+//         p.vertex(
+//           (point.x / vectorWindow.width) * p.width,
+//           (point.y / vectorWindow.height) * p.height
+//         );
+//       }
+//     }
+//     p.endShape();
+//   }
+
+//   p.pop();
+// }
+
 export function show(vectorWindow, p) {
-  p.push();
-  p.translate(vectorWindow.x, vectorWindow.y);
-
-  const currentPoints = state.allPoints[state.allPoints.length - 1];
-
-  p.noFill();
-  p.stroke(0);
-  p.strokeWeight(1);
-
-  for (let i = 0; i < currentPoints.length; i++) {
-    const points = currentPoints[i];
-
-    p.beginShape();
-    for (let j = 0; j < points.length; j++) {
-      const point = points[j];
-
-      const shouldDraw =
-        Math.floor(j / constants.onOffRate + constants.onOffOffset) % 2 <
-        constants.onRatio;
-
-      if (shouldDraw) {
-        p.vertex(
-          (point.x / vectorWindow.width) * p.width,
-          (point.y / vectorWindow.height) * p.height
-        );
-      }
-    }
-    p.endShape();
-  }
-
-  p.pop();
-}
-
-function show(vectorWindow, p) {
+  console.log("draw");
   p.push();
   noFill();
   if ((numberOfIterations + onOffOffset) % onOffRate > onOffRate * onRatio) {
