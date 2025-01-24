@@ -25,8 +25,6 @@ export default {
     request: express.Request<ParamsDictionary, string, RequestBody>,
     response: express.Response<string>
   ) => {
-    console.log('request.body', request.body);
-
     const { outputBounds, vectors } = request.body;
 
     if (vectors.length === 0 || !Array.isArray(vectors)) {

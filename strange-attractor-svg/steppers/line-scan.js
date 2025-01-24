@@ -1,4 +1,4 @@
-import { normaliseVector } from "./utils.js";
+import { normaliseVector } from "../utils.js";
 
 export function lineScan({ length, gap, stepSize, zStepSize, skipCount = 0 }) {
   this.x = 0;

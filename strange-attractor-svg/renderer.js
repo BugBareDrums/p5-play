@@ -1,7 +1,6 @@
 import { state, constants } from "./state.js";
 
 export function show(vectorWindow, p) {
-  console.log("draw");
   const { onOffRate, onOffOffset, onRatio } = constants;
   const { numberOfIterations } = state;
   p.push();

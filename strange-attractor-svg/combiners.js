@@ -1,13 +1,16 @@
 import { getUiValues, rotateArray } from "./utils.js";
 import { combiner } from "./midpoint-combiner.js";
 import { state, constants } from "./state.js";
-import { chen } from "./chen.js";
-import { circ } from "./circle.js";
-import { rectangle } from "./rectangle.js";
-import { createAttractorStepper } from "./attractors.js";
-import { perlin } from "./perlin.js";
-import { corners } from "./corners.js";
-import { lineScan } from "./line-scan.js";
+
+import {
+  lineScan,
+  corners,
+  perlin,
+  chen,
+  circ,
+  rectangle,
+  createAttractorStepper,
+} from "./steppers/index.js";
 
 export function createCombiners(p) {
   const {

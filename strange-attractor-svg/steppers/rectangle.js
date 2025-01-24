@@ -1,4 +1,4 @@
-import { normaliseVector } from "./utils.js";
+import { normaliseVector } from "../utils.js";
 
 export function rectangle({ height, width, stepSize }) {
   this.x = 0 - width / 2;

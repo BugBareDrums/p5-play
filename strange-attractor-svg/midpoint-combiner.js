@@ -54,7 +54,6 @@ export function combiner(
 
   function combination(p, vectors) {
     if (vectors.some((vector) => vector === undefined)) {
-      console.log("undefined vector");
       return undefined;
     }
 

@@ -6047,7 +6047,6 @@ test('[POST] /vector', async () => {
     .send(payload)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json');
-  console.log(res.body);
   //expect(res.body).toEqual('g1 x200 y1000 z0.75');
   expect(res.status).toBe(200);
 });

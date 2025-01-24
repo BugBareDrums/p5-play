@@ -1,4 +1,4 @@
-import { normaliseVector } from "./utils.js";
+import { normaliseVector } from "../utils.js";
 
 const attractors = {
   "Lorenz 84": {

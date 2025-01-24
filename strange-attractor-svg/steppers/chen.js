@@ -1,4 +1,4 @@
-import { normaliseVector } from "./utils.js";
+import { normaliseVector } from "../utils.js";
 
 export function attractor({ xx, yy, zz, a, b, c, dt }) {
   this.x = xx;

@@ -145,7 +145,6 @@ function draw() {
     if (save) {
       saveCanvas(`strange-attractor-2d-${new Date()}`, "png");
     }
-    console.log("done");
   }
 
   combiner1.show();
