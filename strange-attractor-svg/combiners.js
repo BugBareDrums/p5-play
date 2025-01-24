@@ -12,6 +12,8 @@ import {
   createAttractorStepper,
 } from "./steppers/index.js";
 
+// idea - make the combiner and stepper config serializable so it can be saved
+
 export function createCombiners(p) {
   const {
     golden,
@@ -83,6 +85,12 @@ export function createCombiners(p) {
     [0.003 * state.macroIterationNumber],
     p
   );
+
+  const lorenz = createAttractorStepper(
+    "Lorenz",
+    [0.005 * state.macroIterationNumber],
+    p
+  );
   const perlin1 = new perlin({ dr: 0.001 + state.macroIterationNumber * 0.01 });
 
   const corners1 = new corners({
@@ -112,8 +120,9 @@ export function createCombiners(p) {
       new combiner(p, {
         steppers: rotateArray(steppers, i),
         amplitudes: [
-          2,
-          0.04,
+          p.createVector(2, 2, 0),
+          p.createVector(0.08, 0.04, 3),
+          p.createVector(0.04, 0, 1),
           amplitude / golden / golden,
           amplitude / golden / golden / golden,
           amplitude / golden / golden / golden / golden,

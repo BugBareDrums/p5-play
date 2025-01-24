@@ -63,7 +63,7 @@ export function combiner(
 
     vectors = applyOffsets(p, vectors, offsets);
 
-    vectors = applyAmplitudes(vectors, amplitudes);
+    vectors = applyAmplitudes(p, vectors, amplitudes);
 
     let combinedVector = midpoint(p, vectors);
 
@@ -93,8 +93,15 @@ export function combiner(
   };
 }
 
-function applyAmplitudes(vectors, amplitudes) {
-  return vectors.map((vector, index) => vector.mult(amplitudes[index] ?? 1));
+function applyAmplitudes(p, vectors, amplitudes) {
+  return vectors.map((vector, index) => {
+    const amplitude = amplitudes[index] ?? { x: 1, y: 1, z: 1 };
+    return p.createVector(
+      vector.x * amplitude.x,
+      vector.y * amplitude.y,
+      vector.z * amplitude.z
+    );
+  });
 }
 
 function applyOffsets(p, vectors, offsets) {
